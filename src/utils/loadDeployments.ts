@@ -23,7 +23,7 @@ export function loadDeployments(): DeploymentInfo[] {
   const deployments: DeploymentInfo[] = [];
 
   // Path to deployments directory (3 levels up from this file)
-  const deploymentsDir = path.join(__dirname, '..', '..', '..', '..', '..', 'deployments');
+  const deploymentsDir = path.join(__dirname, '..', '..', 'deployments');
 
   logger.info(`Loading deployments from: ${deploymentsDir}`);
 
