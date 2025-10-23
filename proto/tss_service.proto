@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package rapidx.tss;
+
+option go_package = "github.com/rapidx/tss-service/proto";
+
+// TSS Service
+service TSSService {
+  // Run DKG ceremony
+  rpc RunDKG(DKGRequest) returns (DKGResponse);
+
+  // Generate partial signature
+  rpc GeneratePartialSignature(SigningRequest) returns (PartialSignatureResponse);
+
+  // Aggregate partial signatures
+  rpc AggregateSignatures(AggregationRequest) returns (AggregatedSignatureResponse);
+
+  // Reshare key shares
+  rpc ReshareKeys(ResharingRequest) returns (ResharingResponse);
+}
+
+// DKG Request
+message DKGRequest {
+  uint32 party_id = 1;
+  uint32 threshold = 2;
+  uint32 total_parties = 3;
+  repeated string peer_endpoints = 4;
+  uint32 timeout_seconds = 5;
+}
+
+// DKG Response
+message DKGResponse {
+  bytes key_share = 1;
+  bytes public_key_share = 2;
+  bytes aggregated_public_key = 3;
+  repeated uint32 participants = 4;
+  bool success = 5;
+  string error_message = 6;
+}
+
+// Signing Request
+message SigningRequest {
+  string request_id = 1;
+  bytes message = 2;
+  uint32 party_id = 3;
+  repeated uint32 participants = 4;
+  uint32 timeout_seconds = 5;
+}
+
+// Partial Signature Response
+message PartialSignatureResponse {
+  bytes signature = 1;
+  bytes public_key_share = 2;
+  bool success = 3;
+  string error_message = 4;
+}
+
+// Aggregation Request
+message AggregationRequest {
+  repeated PartialSignature partial_signatures = 1;
+  uint32 threshold = 2;
+}
+
+message PartialSignature {
+  uint32 party_id = 1;
+  bytes signature = 2;
+  bytes public_key_share = 3;
+}
+
+// Aggregated Signature Response
+message AggregatedSignatureResponse {
+  bytes signature = 1;
+  repeated uint32 participants = 2;
+  bool success = 3;
+  string error_message = 4;
+}
+
+// Resharing Request
+message ResharingRequest {
+  uint32 old_threshold = 1;
+  uint32 new_threshold = 2;
+  repeated uint32 old_parties = 3;
+  repeated uint32 new_parties = 4;
+  bytes current_key_share = 5;
+  repeated string peer_endpoints = 6;
+}
+
+// Resharing Response
+message ResharingResponse {
+  bytes new_key_share = 1;
+  bytes new_public_key_share = 2;
+  bool success = 3;
+  string error_message = 4;
+}
